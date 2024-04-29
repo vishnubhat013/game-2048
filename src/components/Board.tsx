@@ -7,7 +7,7 @@ const CELL_SIZE = 20;
 const CELL_GAP = 2;
 
 class Grid {
-  private cells: Cell[];
+  cells: Cell[];
   constructor(gridElement: HTMLElement) {
     console.log("Grid constructor called");
     gridElement.style.setProperty("--grid-size", GRID_SIZE.toString());
@@ -66,7 +66,6 @@ class Cell {
   x: any;
   y: any;
   private _tile: any;
-  value: any;
   private _mergeTile: any;
   constructor(cellElement: HTMLDivElement, x: number, y: any) {
     this.cellElement = cellElement;
@@ -98,6 +97,16 @@ class Cell {
       this._tile == null ||
       (this._mergeTile == null && this._tile.value == this.value)
     );
+  }
+
+  mergeTiles() {
+    if (this.tile == null || this._mergeTile == null) return;
+    this.tile.value = this.tile.value + this._mergeTile.value;
+    this._mergeTile.remove();
+    this._mergeTile = null;
+  }
+  get value(): number {
+    return this.value;
   }
 }
 
@@ -138,6 +147,10 @@ class Tile {
     this._y = _value;
     this.tileElement.style.setProperty("--y", _value);
   }
+
+  remove() {
+    this.tileElement.remove();
+  }
 }
 
 function handleInput(e: { key: any }, grid: Grid) {
@@ -157,6 +170,7 @@ function handleInput(e: { key: any }, grid: Grid) {
     default:
       break;
   }
+  grid.cells.forEach((cell) => cell.mergeTiles());
 }
 
 function moveUp(grid: any) {

@@ -68,9 +68,9 @@ class Cell {
 
 class Tile {
   private tileElement: any;
-  private value: number;
   private _x: any;
   private _y: any;
+  private _value: any;
 
   constructor(tileContainer: HTMLElement, value = Math.random() > 0.5 ? 2 : 4) {
     this.tileElement = document.createElement("div");
@@ -79,9 +79,9 @@ class Tile {
     this.value = value;
   }
 
-  /*/ set Tilevalue(v: any) {
-    this.value = v;
-    this.tileElement.textcontent = v;
+  set value(v: number) {
+    this._value = v;
+    this.tileElement.textContent = v;
     const power = Math.log2(v);
     const backgroundLightness = 100 - power * 9;
     this.tileElement.style.setProperty(
@@ -92,16 +92,16 @@ class Tile {
       "--text-lightness",
       `${backgroundLightness <= 50 ? 90 : 10}%`
     );
-  }/*/
-
-  set x(value: any) {
-    this._x = value;
-    this.tileElement.style.setProperty("--x", value);
   }
 
-  set y(value: any) {
-    this._y = value;
-    this.tileElement.style.setProperty("--y", value);
+  set x(_value: any) {
+    this._x = _value;
+    this.tileElement.style.setProperty("--x", _value);
+  }
+
+  set y(_value: any) {
+    this._y = _value;
+    this.tileElement.style.setProperty("--y", _value);
   }
 }
 
@@ -112,6 +112,7 @@ export default function Board() {
     if (gameBoardDiv) {
       const grid = new Grid(gameBoardDiv);
 
+      grid.randomEmptyCell().tile = new Tile(gameBoardDiv);
       grid.randomEmptyCell().tile = new Tile(gameBoardDiv);
     }
   }, []);

@@ -185,12 +185,14 @@ function slidesTiles(cells: (string | any[])[]) {
         if (!moveToCell.canAccept(cell.tile)) break;
         lastValidcell = moveToCell;
       }
+
       if (lastValidcell != null) {
-        if (lastValidcell != null) {
+        if (lastValidcell.tile != null) {
           lastValidcell.mergeTile = cell.tile;
         } else {
-          cell.tile = null;
+          lastValidcell.tile = cell.tile;
         }
+        cell.tile = null;
       }
     }
   });

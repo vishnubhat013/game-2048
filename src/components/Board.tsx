@@ -20,7 +20,6 @@ class Grid {
         Math.floor(index / GRID_SIZE)
       );
     });
-    console.log(this.cells);
   }
 
   get emptyCells() {
@@ -30,7 +29,24 @@ class Grid {
     const randomIndex = Math.floor(Math.random() * this.emptyCells.length);
     return this.emptyCells[randomIndex];
   }
+
+  get cellsByColumn(): Cell[][] {
+    return this.cells.reduce((cellGrid: Cell[][], cell: Cell) => {
+      cellGrid[cell.x] = cellGrid[cell.x] || [];
+      cellGrid[cell.x][cell.y] = cell;
+      return cellGrid;
+    }, []);
+  }
+
+  get cellsByRow(): Cell[][] {
+    return this.cells.reduce((cellGrid: Cell[][], cell: Cell) => {
+      cellGrid[cell.y] = cellGrid[cell.y] || [];
+      cellGrid[cell.y][cell.x] = cell;
+      return cellGrid;
+    }, []);
+  }
 }
+
 function createCellElements(gridElement: {
   append: (arg0: HTMLDivElement) => void;
 }) {
@@ -50,6 +66,8 @@ class Cell {
   x: any;
   y: any;
   private _tile: any;
+  value: any;
+  private _mergeTile: any;
   constructor(cellElement: HTMLDivElement, x: number, y: any) {
     this.cellElement = cellElement;
     this.x = x;
@@ -63,6 +81,23 @@ class Cell {
     if (value == null) return;
     this._tile.x = this.x;
     this._tile.y = this.y;
+  }
+
+  get mergeTile(): Tile {
+    return this._mergeTile;
+  }
+  set mergeTile(value) {
+    this._mergeTile = value;
+    if (value == null) return;
+    this._mergeTile.x = this.x;
+    this._mergeTile.y = this.y;
+  }
+
+  canAccept(_tile: any) {
+    return (
+      this._tile == null ||
+      (this.mergeTile == null && this._tile.value == this.value)
+    );
   }
 }
 
@@ -105,6 +140,62 @@ class Tile {
   }
 }
 
+function handleInput(e: { key: any }, grid: Grid) {
+  switch (e.key) {
+    case "ArrowUp":
+      moveUp(grid);
+      break;
+    case "ArrowDown":
+      moveDown(grid);
+      break;
+    case "ArrowRight":
+      moveRight(grid);
+      break;
+    case "ArrowLeft":
+      moveLeft(grid);
+      break;
+    default:
+      break;
+  }
+}
+
+function moveUp(grid: any) {
+  return slidesTiles(grid.cellsByColumn);
+}
+function moveDown(grid: any) {
+  return slidesTiles(
+    grid.cellsByColumn.map((column: any) => [...column].reverse())
+  );
+}
+function moveLeft(grid: any) {
+  return slidesTiles(grid.cellsByRow);
+}
+function moveRight(grid: any) {
+  return slidesTiles(grid.cellsByRow.map((row: any) => [...row].reverse()));
+}
+
+function slidesTiles(cells: (string | any[])[]) {
+  cells.forEach((group: string | any[]) => {
+    for (let i = 1; i < group.length; i++) {
+      const cell = group[i];
+      if (cell.tile == null) continue;
+      let lastValidcell;
+      for (let j = i - 1; j >= 0; j--) {
+        const moveToCell = group[j];
+        if (!moveToCell.canAccept(cell.tile)) break;
+        lastValidcell = moveToCell;
+      }
+      if (lastValidcell != null) {
+        if (lastValidcell != null) {
+          lastValidcell.mergeTile = cell.tile;
+        } else {
+          cell.tile = null;
+        }
+      }
+    }
+  });
+}
+
 export default function Board() {
   useEffect(() => {
     console.log("Board component mounted or updated");
@@ -114,6 +205,9 @@ export default function Board() {
 
       grid.randomEmptyCell().tile = new Tile(gameBoardDiv);
       grid.randomEmptyCell().tile = new Tile(gameBoardDiv);
+      window.addEventListener("keydown", (event) => {
+        handleInput(event, grid);
+      });
     }
   }, []);
 

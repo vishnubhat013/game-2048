@@ -2,32 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+*, *::before, *::after {
+    box-sizing: border-box;
+    font-family: Arial;
   }
-}
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-size),var(--cell-size));
+    grid-template-rows:repeat(var(--grid-size),var(--cell-size));
+    background-color: #CCC;
+    gap:2vmin;
+    border: 1vmin;
+    padding:2vmin;
+    border-radius:1vmin;
+    position: relative;
   }
+
+  body {
+    background-color: #333;
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-size: 7.5vmin;
+   
+  }
+  .cell {
+    background-color: #AAA;
+    border-radius: 1vmin;
+  }
+  
+.tile {
+    --x:0;
+    --y:0;
+    --background-lightness:80%;
+    --text-lightness:20%;
+     position:absolute;
+     display:flex;
+     justify-content:center;
+     align-items:center;
+     width: var(--cell-size);
+     height: var(--cell-size);
+     background-color: red;
+     border-radius: 1vmin;
+     top: calc(var(--y) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
+     left: calc(var(--x) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
+     font-weight: bold;
+     background-color: hsl(200, 50%, var(--background-lightness));
+     color: hsl(200, 25%, var(--text-lightness));
+     animation: show 200ms ease-in-out;
+     transition: 100ms ease-in-out;
 }
+
+@keyframes show {
+    0% {
+      opacity: .5;
+      transform: scale(0);
+    }
+  }

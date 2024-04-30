@@ -62,25 +62,34 @@ function createCellElements(gridElement: {
 }
 
 class Cell {
-  cellElement: any;
-  x: any;
-  y: any;
-  _value: any;
+  private cellElement: any;
+  private _x: any;
+  private _y: any;
   private _tile: any;
   private _mergeTile: any;
   constructor(cellElement: HTMLDivElement, x: number, y: any) {
     this.cellElement = cellElement;
-    this.x = x;
-    this.y = y;
+    this._x = x;
+    this._y = y;
   }
+
+  get x() {
+    return this._x;
+  }
+
+  get y() {
+    return this._y;
+  }
+
   get tile() {
     return this._tile;
   }
+
   set tile(value: any) {
     this._tile = value;
     if (value == null) return;
-    this._tile.x = this.x;
-    this._tile.y = this.y;
+    this._tile.x = this._x;
+    this._tile.y = this._y;
   }
 
   get mergeTile(): any {
@@ -89,8 +98,8 @@ class Cell {
   set mergeTile(value) {
     this._mergeTile = value;
     if (value == null) return;
-    this._mergeTile.x = this.x;
-    this._mergeTile.y = this.y;
+    this._mergeTile.x = this._x;
+    this._mergeTile.y = this._y;
   }
 
   canAccept(tile: any) {
@@ -106,51 +115,52 @@ class Cell {
     this.mergeTile.remove();
     this.mergeTile = null;
   }
-  get value(): number {
-    return this._value;
-  }
 }
 
 class Tile {
-  private tileElement: any;
+  private _tileElement: any;
   private _x: any;
   private _y: any;
   private _value: any;
 
   constructor(tileContainer: HTMLElement, value = Math.random() > 0.5 ? 2 : 4) {
-    this.tileElement = document.createElement("div");
-    this.tileElement.classList.add("tile");
-    tileContainer.append(this.tileElement);
+    this._tileElement = document.createElement("div");
+    this._tileElement.classList.add("tile");
+    tileContainer.append(this._tileElement);
     this.value = value;
+  }
+
+  get value() {
+    return this._value;
   }
 
   set value(v: number) {
     this._value = v;
-    this.tileElement.textContent = v;
+    this._tileElement.textContent = v;
     const power = Math.log2(v);
     const backgroundLightness = 100 - power * 9;
-    this.tileElement.style.setProperty(
+    this._tileElement.style.setProperty(
       "--background-lightness",
       `${backgroundLightness}%`
     );
-    this.tileElement.style.setProperty(
+    this._tileElement.style.setProperty(
       "--text-lightness",
       `${backgroundLightness <= 50 ? 90 : 10}%`
     );
   }
 
-  set x(_value: any) {
-    this._x = _value;
-    this.tileElement.style.setProperty("--x", _value);
+  set x(value: any) {
+    this._x = value;
+    this._tileElement.style.setProperty("--x", value);
   }
 
-  set y(_value: any) {
-    this._y = _value;
-    this.tileElement.style.setProperty("--y", _value);
+  set y(value: any) {
+    this._y = value;
+    this._tileElement.style.setProperty("--y", value);
   }
 
   remove() {
-    this.tileElement.remove();
+    this._tileElement.remove();
   }
 }
 

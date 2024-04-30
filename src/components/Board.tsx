@@ -65,6 +65,7 @@ class Cell {
   cellElement: any;
   x: any;
   y: any;
+  _value: any;
   private _tile: any;
   private _mergeTile: any;
   constructor(cellElement: HTMLDivElement, x: number, y: any) {
@@ -95,18 +96,15 @@ class Cell {
   canAccept(_tile: any) {
     return (
       this._tile == null ||
-      (this._mergeTile == null && this._tile.value == this.value)
+      (this._mergeTile == null && this._tile.value == this._value)
     );
   }
 
   mergeTiles() {
-    if (this.tile == null || this._mergeTile == null) return;
-    this.tile.value = this.tile.value + this._mergeTile.value;
+    if (this._tile == null || this._mergeTile == null) return;
+    this._tile.value = this._tile.value + this._mergeTile.value;
     this._mergeTile.remove();
     this._mergeTile = null;
-  }
-  get value(): number {
-    return this.value;
   }
 }
 
@@ -121,6 +119,10 @@ class Tile {
     this.tileElement.classList.add("tile");
     tileContainer.append(this.tileElement);
     this.value = value;
+  }
+
+  get value(): number {
+    return this._value;
   }
 
   set value(v: number) {

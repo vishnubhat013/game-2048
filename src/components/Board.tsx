@@ -313,5 +313,10 @@ export default function Board() {
     }
   }, []);
 
-  return <div className="mx-28 my-28" id="game-board"></div>;
+  return (
+    <div>
+      <h1 className="text-white font-bold text-center">2048 Daily</h1>
+      <div id="game-board"></div>
+    </div>
+  );
 }

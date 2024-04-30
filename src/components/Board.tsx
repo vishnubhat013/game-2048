@@ -178,24 +178,59 @@ class Tile {
 async function handleInput(e: { key: any }, grid: Grid,gameBoardDiv: HTMLElement) {
   switch (e.key) {
     case "ArrowUp":
-       await moveUp(grid);
-      break;
+    if(!canMoveUp(grid)) {
+      break
+    }
+    await moveUp(grid)
+    break
     case "ArrowDown":
-      await moveDown(grid);
-      break;
-    case "ArrowRight":
-      await moveRight(grid);
-      break;
+    if(!canMoveDown(grid)) {
+      break
+    }
+    await moveDown(grid)
+    break
     case "ArrowLeft":
-      await moveLeft(grid);
-      break;
-    default:
-      break;
+    if(!canMoveLeft(grid)) {
+      break
+    }
+    await moveLeft(grid)
+    break
+    case "ArrowRight":
+    if(!canMoveRight(grid)) {
+      break
+    }
+    await moveRight(grid)
+    break
   }
   grid.cells.forEach((cell) => cell.mergeTiles());
 
   const newTile  = new Tile(gameBoardDiv)
   grid.randomEmptyCell().tile = newTile;
+
+  if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
+    newTile.waitForTransition(true).then(() => {
+      alert("You lose")
+    })
+    return
+  }
+}
+
+
+
+function canMoveUp(grid: any) {
+  return canMove(grid.cellsByColumn)
+}
+
+function canMoveDown(grid: any) {
+  return canMove(grid.cellsByColumn.map((column: any) => [...column].reverse()))
+}
+
+function canMoveLeft(grid: any) {
+  return canMove(grid.cellsByRow)
+}
+
+function canMoveRight(grid: any) {
+  return canMove(grid.cellsByRow.map((row: any) => [...row].reverse()))
 }
 
 function moveUp(grid: any) {
@@ -241,6 +276,19 @@ function slidesTiles(cells: (string | any[])[]) {
   })
 )
 }
+
+function canMove(cells: any[]) {
+  return cells.some((group: any[]) => {
+    return group.some((cell: { tile: null; }, index: number) => {
+      if (index === 0) return false
+      if (cell.tile == null) return false
+      const moveToCell = group[index - 1]
+      return moveToCell.canAccept(cell.tile)
+    })
+  })
+}
+
+
 
 export default function Board() {
   useEffect(() => {

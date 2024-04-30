@@ -83,7 +83,7 @@ class Cell {
     this._tile.y = this.y;
   }
 
-  get mergeTile(): Tile {
+  get mergeTile(): any {
     return this._mergeTile;
   }
   set mergeTile(value) {
@@ -93,18 +93,18 @@ class Cell {
     this._mergeTile.y = this.y;
   }
 
-  canAccept(_tile: any) {
+  canAccept(tile: any) {
     return (
       this.tile == null ||
-      (this.mergeTile == null && this._tile.value === _tile.value)
+      (this.mergeTile == null && this._tile.value === tile.value)
     );
   }
 
   mergeTiles() {
-    if (this._tile == null || this._mergeTile == null) return;
-    this._tile.value = this._tile.value + this._mergeTile.value;
-    this._mergeTile.remove();
-    this._mergeTile = null;
+    if (this.tile == null || this.mergeTile == null) return;
+    this.tile.value = this.tile.value + this.mergeTile.value;
+    this.mergeTile.remove();
+    this.mergeTile = null;
   }
   get value(): number {
     return this._value;

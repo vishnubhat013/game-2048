@@ -96,7 +96,7 @@ class Cell {
   canAccept(tile: any) {
     return (
       this.tile == null ||
-      (this.mergeTile == null && this._tile.value === tile.value)
+      (this.mergeTile == null && this.tile.value === tile.value)
     );
   }
 

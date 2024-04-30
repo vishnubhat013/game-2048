@@ -9,6 +9,7 @@ const CELL_GAP = 2;
 class Grid {
   cells: Cell[];
   constructor(gridElement: HTMLElement) {
+    console.log("Grid constructor called");
     gridElement.style.setProperty("--grid-size", GRID_SIZE.toString());
     gridElement.style.setProperty("--cell-size", `${CELL_SIZE}vmin`);
     gridElement.style.setProperty("--cell-gap", `${CELL_GAP}vmin`);
@@ -49,6 +50,7 @@ class Grid {
 function createCellElements(gridElement: {
   append: (arg0: HTMLDivElement) => void;
 }) {
+  console.log("createCellElements called");
   const cells = [];
   for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
     const cell = document.createElement("div");
@@ -66,7 +68,6 @@ class Cell {
   _value: any;
   private _tile: any;
   private _mergeTile: any;
-  value: any;
   constructor(cellElement: HTMLDivElement, x: number, y: any) {
     this.cellElement = cellElement;
     this.x = x;
@@ -95,7 +96,7 @@ class Cell {
   canAccept(_tile: any) {
     return (
       this._tile == null ||
-      (this._mergeTile == null && this._tile.value === this.value)
+      (this._mergeTile == null && this._tile.value == this.value)
     );
   }
 
@@ -104,6 +105,9 @@ class Cell {
     this._tile.value = this._tile.value + this._mergeTile.value;
     this._mergeTile.remove();
     this._mergeTile = null;
+  }
+  get value(): number {
+    return this._value;
   }
 }
 
@@ -118,10 +122,6 @@ class Tile {
     this.tileElement.classList.add("tile");
     tileContainer.append(this.tileElement);
     this.value = value;
-  }
-
-  get value(): number {
-    return this._value;
   }
 
   set value(v: number) {
@@ -215,6 +215,7 @@ function slidesTiles(cells: (string | any[])[]) {
 
 export default function Board() {
   useEffect(() => {
+    console.log("Board component mounted or updated");
     const gameBoardDiv = document.getElementById("game-board");
     if (gameBoardDiv) {
       const grid = new Grid(gameBoardDiv);

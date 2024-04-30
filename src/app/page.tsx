@@ -1,9 +1,10 @@
-import dynamic from 'next/dynamic'
- 
-const DynamicHeader = dynamic(() => import('../components/Board'), {
-  loading: () => <p>Loading...</p>,
-})
- 
+import Header from "@/components/Header";
+import Board from "../components/Board";
 export default function Home() {
-  return <DynamicHeader />
+  return (
+    <div className="flex">
+      <Header />
+      <Board />
+    </div>
+  );
 }

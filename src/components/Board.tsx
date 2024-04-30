@@ -313,5 +313,5 @@ export default function Board() {
     }
   }, []);
 
-  return <div className="mx-14 my-28" id="game-board"></div>;
+  return <div className="mx-28 my-28" id="game-board"></div>;
 }

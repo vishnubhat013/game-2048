@@ -162,26 +162,40 @@ class Tile {
   remove() {
     this._tileElement.remove();
   }
+  waitForTransition(animation = false) {
+    return new Promise(resolve => {
+      this._tileElement.addEventListener(
+        animation ? "animationend" : "transitionend",
+        resolve,
+        {
+          once: true,
+        }
+      )
+    })
+  }
 }
 
-function handleInput(e: { key: any }, grid: Grid) {
+async function handleInput(e: { key: any }, grid: Grid,gameBoardDiv: HTMLElement) {
   switch (e.key) {
     case "ArrowUp":
-      moveUp(grid);
+       await moveUp(grid);
       break;
     case "ArrowDown":
-      moveDown(grid);
+      await moveDown(grid);
       break;
     case "ArrowRight":
-      moveRight(grid);
+      await moveRight(grid);
       break;
     case "ArrowLeft":
-      moveLeft(grid);
+      await moveLeft(grid);
       break;
     default:
       break;
   }
   grid.cells.forEach((cell) => cell.mergeTiles());
+
+  const newTile  = new Tile(gameBoardDiv)
+  grid.randomEmptyCell().tile = newTile;
 }
 
 function moveUp(grid: any) {
@@ -200,7 +214,9 @@ function moveRight(grid: any) {
 }
 
 function slidesTiles(cells: (string | any[])[]) {
-  cells.forEach((group: string | any[]) => {
+  return Promise.all(
+  cells.flatMap((group: string | any[]) => {
+    const promises = []
     for (let i = 1; i < group.length; i++) {
       const cell = group[i];
       if (cell.tile == null) continue;
@@ -212,6 +228,7 @@ function slidesTiles(cells: (string | any[])[]) {
       }
 
       if (lastValidcell != null) {
+        promises.push(cell.tile.waitForTransition())
         if (lastValidcell.tile != null) {
           lastValidcell.mergeTile = cell.tile;
         } else {
@@ -220,12 +237,14 @@ function slidesTiles(cells: (string | any[])[]) {
         cell.tile = null;
       }
     }
-  });
+    return promises
+  })
+)
 }
 
 export default function Board() {
   useEffect(() => {
-    console.log("Board component mounted or updated");
+    
     const gameBoardDiv = document.getElementById("game-board");
     if (gameBoardDiv) {
       const grid = new Grid(gameBoardDiv);
@@ -233,7 +252,7 @@ export default function Board() {
       grid.randomEmptyCell().tile = new Tile(gameBoardDiv);
       grid.randomEmptyCell().tile = new Tile(gameBoardDiv);
       window.addEventListener("keydown", (event) => {
-        handleInput(event, grid);
+        handleInput(event, grid, gameBoardDiv);
       });
     }
   }, []);

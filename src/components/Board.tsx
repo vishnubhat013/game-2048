@@ -163,74 +163,85 @@ class Tile {
     this._tileElement.remove();
   }
   waitForTransition(animation = false) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this._tileElement.addEventListener(
         animation ? "animationend" : "transitionend",
         resolve,
         {
           once: true,
         }
-      )
-    })
+      );
+    });
   }
 }
 
-async function handleInput(e: { key: any }, grid: Grid,gameBoardDiv: HTMLElement) {
+async function handleInput(
+  e: { key: any },
+  grid: Grid,
+  gameBoardDiv: HTMLElement
+) {
   switch (e.key) {
     case "ArrowUp":
-    if(!canMoveUp(grid)) {
-      break
-    }
-    await moveUp(grid)
-    break
+      if (!canMoveUp(grid)) {
+        return;
+      }
+      await moveUp(grid);
+      break;
     case "ArrowDown":
-    if(!canMoveDown(grid)) {
-      break
-    }
-    await moveDown(grid)
-    break
+      if (!canMoveDown(grid)) {
+        return;
+      }
+      await moveDown(grid);
+      break;
     case "ArrowLeft":
-    if(!canMoveLeft(grid)) {
-      break
-    }
-    await moveLeft(grid)
-    break
+      if (!canMoveLeft(grid)) {
+        return;
+      }
+      await moveLeft(grid);
+      break;
     case "ArrowRight":
-    if(!canMoveRight(grid)) {
-      break
-    }
-    await moveRight(grid)
-    break
+      if (!canMoveRight(grid)) {
+        return;
+      }
+      await moveRight(grid);
+      break;
+    default:
+      return;
   }
   grid.cells.forEach((cell) => cell.mergeTiles());
 
-  const newTile  = new Tile(gameBoardDiv)
+  const newTile = new Tile(gameBoardDiv);
   grid.randomEmptyCell().tile = newTile;
 
-  if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
+  if (
+    !canMoveUp(grid) &&
+    !canMoveDown(grid) &&
+    !canMoveLeft(grid) &&
+    !canMoveRight(grid)
+  ) {
     newTile.waitForTransition(true).then(() => {
-      alert("You lose")
-    })
-    return
+      alert("You lose");
+    });
+    return;
   }
 }
 
-
-
 function canMoveUp(grid: any) {
-  return canMove(grid.cellsByColumn)
+  return canMove(grid.cellsByColumn);
 }
 
 function canMoveDown(grid: any) {
-  return canMove(grid.cellsByColumn.map((column: any) => [...column].reverse()))
+  return canMove(
+    grid.cellsByColumn.map((column: any) => [...column].reverse())
+  );
 }
 
 function canMoveLeft(grid: any) {
-  return canMove(grid.cellsByRow)
+  return canMove(grid.cellsByRow);
 }
 
 function canMoveRight(grid: any) {
-  return canMove(grid.cellsByRow.map((row: any) => [...row].reverse()))
+  return canMove(grid.cellsByRow.map((row: any) => [...row].reverse()));
 }
 
 function moveUp(grid: any) {
@@ -250,49 +261,46 @@ function moveRight(grid: any) {
 
 function slidesTiles(cells: (string | any[])[]) {
   return Promise.all(
-  cells.flatMap((group: string | any[]) => {
-    const promises = []
-    for (let i = 1; i < group.length; i++) {
-      const cell = group[i];
-      if (cell.tile == null) continue;
-      let lastValidcell;
-      for (let j = i - 1; j >= 0; j--) {
-        const moveToCell = group[j];
-        if (!moveToCell.canAccept(cell.tile)) break;
-        lastValidcell = moveToCell;
-      }
-
-      if (lastValidcell != null) {
-        promises.push(cell.tile.waitForTransition())
-        if (lastValidcell.tile != null) {
-          lastValidcell.mergeTile = cell.tile;
-        } else {
-          lastValidcell.tile = cell.tile;
+    cells.flatMap((group: string | any[]) => {
+      const promises = [];
+      for (let i = 1; i < group.length; i++) {
+        const cell = group[i];
+        if (cell.tile == null) continue;
+        let lastValidcell;
+        for (let j = i - 1; j >= 0; j--) {
+          const moveToCell = group[j];
+          if (!moveToCell.canAccept(cell.tile)) break;
+          lastValidcell = moveToCell;
         }
-        cell.tile = null;
+
+        if (lastValidcell != null) {
+          promises.push(cell.tile.waitForTransition());
+          if (lastValidcell.tile != null) {
+            lastValidcell.mergeTile = cell.tile;
+          } else {
+            lastValidcell.tile = cell.tile;
+          }
+          cell.tile = null;
+        }
       }
-    }
-    return promises
-  })
-)
+      return promises;
+    })
+  );
 }
 
 function canMove(cells: any[]) {
   return cells.some((group: any[]) => {
-    return group.some((cell: { tile: null; }, index: number) => {
-      if (index === 0) return false
-      if (cell.tile == null) return false
-      const moveToCell = group[index - 1]
-      return moveToCell.canAccept(cell.tile)
-    })
-  })
+    return group.some((cell: { tile: null }, index: number) => {
+      if (index === 0) return false;
+      if (cell.tile == null) return false;
+      const moveToCell = group[index - 1];
+      return moveToCell.canAccept(cell.tile);
+    });
+  });
 }
-
-
 
 export default function Board() {
   useEffect(() => {
-    
     const gameBoardDiv = document.getElementById("game-board");
     if (gameBoardDiv) {
       const grid = new Grid(gameBoardDiv);

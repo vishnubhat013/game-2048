@@ -68,6 +68,7 @@ class Cell {
   _value: any;
   private _tile: any;
   private _mergeTile: any;
+  value: any;
   constructor(cellElement: HTMLDivElement, x: number, y: any) {
     this.cellElement = cellElement;
     this.x = x;
@@ -93,10 +94,10 @@ class Cell {
     this._mergeTile.y = this.y;
   }
 
-  canAccept(_tile: any) {
+  canAccept(_tile: Tile) {
     return (
       this._tile == null ||
-      (this._mergeTile == null && this._tile.value == this._value)
+      (this._mergeTile == null && this._tile.value == this.value)
     );
   }
 

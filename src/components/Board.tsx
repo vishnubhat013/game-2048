@@ -9,7 +9,6 @@ const CELL_GAP = 2;
 class Grid {
   cells: Cell[];
   constructor(gridElement: HTMLElement) {
-    console.log("Grid constructor called");
     gridElement.style.setProperty("--grid-size", GRID_SIZE.toString());
     gridElement.style.setProperty("--cell-size", `${CELL_SIZE}vmin`);
     gridElement.style.setProperty("--cell-gap", `${CELL_GAP}vmin`);
@@ -50,7 +49,6 @@ class Grid {
 function createCellElements(gridElement: {
   append: (arg0: HTMLDivElement) => void;
 }) {
-  console.log("createCellElements called");
   const cells = [];
   for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
     const cell = document.createElement("div");
@@ -97,7 +95,7 @@ class Cell {
   canAccept(_tile: Tile) {
     return (
       this._tile == null ||
-      (this._mergeTile == null && this._tile.value == this.value)
+      (this._mergeTile == null && this._tile.value === this.value)
     );
   }
 
@@ -217,7 +215,6 @@ function slidesTiles(cells: (string | any[])[]) {
 
 export default function Board() {
   useEffect(() => {
-    console.log("Board component mounted or updated");
     const gameBoardDiv = document.getElementById("game-board");
     if (gameBoardDiv) {
       const grid = new Grid(gameBoardDiv);
